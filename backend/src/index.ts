@@ -1,11 +1,14 @@
 import express from "express";
-import {UserModel,contentModel} from "./db";
+import {UserModel,contentModel,linkModel} from "./db";
+import { random } from "./utils";
 import jwt from "jsonwebtoken";
 import { secret } from "./pass";
 import { UserMiddleware } from "./middleware";
+import cors from "cors"
 
 const app = express();
 app.use(express.json());
+app.use(cors())
 
 app.post("/api/v1/signin", async(req,res)=>{
     const username = req.body.username;
@@ -47,11 +50,10 @@ app.post("/api/v1/signup", async(req,res)=>{
 })
 
 app.get("/api/v1/content",UserMiddleware ,async(req,res)=>{
-    //@ts-ignore
     const userId = req.userId;
     const content = await contentModel.find({
         userId
-    }).populate("User","username");
+    }).populate("userId","username");
     res.json({
         content
     })
@@ -60,9 +62,9 @@ app.get("/api/v1/content",UserMiddleware ,async(req,res)=>{
 app.post("/api/v1/content", UserMiddleware ,async(req,res)=>{
     const title = req.body.title;
     const link = req.body.link;
+    const type = req.body.type;
     await contentModel.create({
-        title,link,
-        //@ts-ignore
+        title,link,type,
         userId:req.userId,
         tags: []
     })
@@ -76,7 +78,6 @@ app.delete("/api/v1/content", UserMiddleware, async (req, res) => {
 
     const result = await contentModel.deleteOne({
         _id: contentId,
-        //@ts-ignore
         userId: req.userId
     });
 
@@ -90,12 +91,63 @@ app.delete("/api/v1/content", UserMiddleware, async (req, res) => {
 });
 
 
-app.post("/api/v1/brain/share",(req,res)=>{
+app.post("/api/v1/brain/share", UserMiddleware ,async (req,res)=>{
+    let share = req.body.share;
+    let hash = random(10);
+    if (share) {// if shared by user
+        //1.Check if already shared
+        const existingLink = await linkModel.findOne({
+            userId: req.userId
+        })
 
+        if(existingLink) {// if shared already then return existing link
+            res.json({
+                hash: existingLink.hash
+            })
+            return;
+        }
+        //if not shared already then create return new link
+        await linkModel.create({
+            userId: req.userId,
+            hash: hash
+        })
+
+        res.json({
+            message: "/api/v1/brain/" + hash
+        })
+    }
+
+    else{//if not shared delete current link
+        await linkModel.deleteOne({
+            userId: req.userId
+        })
+
+        res.json({
+            message: "Removed Link"
+        })
+    }
 })
 
-app.post("/api/v1/brain/:shareLink",(req,res)=>{
+app.get("/api/v1/brain/:shareLink", async(req,res)=>{
+    let hash = req.params.shareLink;
+    let link = await linkModel.findOne({
+        hash: hash
+    })
 
+    if(!link) {
+        res.status(411).json({
+            message: "Sorry Incorrect input"
+        })
+        return;
+    }
+
+    let content = await contentModel.find({
+        userId: link.userId
+    })
+
+    res.json({
+        message: content
+    })
 })
 
 app.listen(3000)
