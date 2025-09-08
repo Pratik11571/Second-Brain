@@ -1,4 +1,3 @@
-
 import { useRef, useState } from "react";
 import { CrossIcon } from "../icons/CrossIcon";
 import { Button } from "./Button";
@@ -8,7 +7,10 @@ import { BACKEND_URL } from "../config";
 
 enum ContentType {
     Youtube = "youtube",
-    Twitter = "twitter"
+    Twitter = "twitter",
+    Instagram = "instagram",
+    Text = "text",
+    Document = "document"
 }
 
 export function CreateContentModel({ open, onClose }: {
@@ -49,9 +51,12 @@ export function CreateContentModel({ open, onClose }: {
                         </div>
                         <div>
                             <h1>Type</h1>
-                            <div className="flex gap-1 justify-center pb-2">
+                            <div className="flex gap-1 flex-wrap justify-center pb-2">
                                 <Button text="Youtube" variant={type === ContentType.Youtube ? "primary" : "secondary"} onClick={() => setType(ContentType.Youtube)} />
                                 <Button text="Twitter" variant={type === ContentType.Twitter ? "primary" : "secondary"} onClick={() => setType(ContentType.Twitter)} />
+                                <Button text="Instagram" variant={type === ContentType.Instagram ? "primary" : "secondary"} onClick={() => setType(ContentType.Instagram)} />
+                                <Button text="Text" variant={type === ContentType.Text ? "primary" : "secondary"} onClick={() => setType(ContentType.Text)} />
+                                <Button text="Document" variant={type === ContentType.Document ? "primary" : "secondary"} onClick={() => setType(ContentType.Document)} />
                             </div>
                         </div>
                         <div className="flex justify-center">
@@ -65,4 +70,3 @@ export function CreateContentModel({ open, onClose }: {
         }
     </div>
 }
-
