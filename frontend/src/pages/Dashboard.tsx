@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Button } from '../components/Button'
-import { Card } from '../components/Card.js'
-import { CreateContentModel } from '../components/CreateContentModel.js'
+import { Card } from '../components/Card'
+import { CreateContentModel } from '../components/CreateContentModel'
 import { ToastContainer, toast } from 'react-toastify';
-import { PlusIcon } from "../icons/PlusIcon.jsx"
-import { ShareIcon } from '../icons/ShareIcon.js'
-import { SideBar } from '../components/Sidebar.js'
-import { useContent } from '../hooks/useContent.js'
+import { PlusIcon } from "../icons/PlusIcon"
+import { ShareIcon } from '../icons/ShareIcon'
+import { SideBar } from '../components/Sidebar'
+import { useContent } from '../hooks/useContent'
 import axios from 'axios'
-import { BACKEND_URL } from '../config.js'
+import { BACKEND_URL } from '../config'
 export function Dashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const { contents, refresh } = useContent()
@@ -59,4 +59,3 @@ export function Dashboard() {
     </div>
   )
 }
-
