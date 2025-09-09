@@ -8,3 +8,9 @@
     --color-gray-500: #e6e9ed;
     --color-gray-600: #95989c;
 }
+
+@keyframes float {
+  0% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-12px) translateX(6px); }
+  100% { transform: translateY(0) translateX(0); }
+}
